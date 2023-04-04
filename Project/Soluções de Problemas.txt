@@ -1,0 +1,6 @@
+Workbench não conecta no server:
+https://askubuntu.com/questions/1242026/cannot-connect-mysql-workbench-to-mysql-server
+
+Ler/carregar dados de um arquivo no ubuntu/linux:
+-Pode acontecer de o LOAD DATA LOCAL INFILE não funcionar, nesse caso deve ser substituído por LOAD DATA INFILE
+-Pode acontecer de o mysql não conseguir acessar o arquivo por uma restrição de permissão secure_file_priv. Com o comando mysql 'SHOW VARIABLES LIKE "secure_file_priv";' podemos ver a pasta em que o arquivo a ser lido deve estar, normalmente '/var/lib/mysql-files'. Essa pasta também pode ter seu acesso restrito, então para que seja possível copiar os arquivos para ela devemos executar o comando 'sudo -i' e em seguida mover o arquivo com o comando 'mv [file] [directory]'

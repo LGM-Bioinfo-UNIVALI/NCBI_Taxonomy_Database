@@ -1,0 +1,53 @@
+Como instalar MySQL e Workbench no Linux:
+https://www.youtube.com/watch?v=NkJwjy3LOd4
+
+--------------------------------------------------------------
+Para baixar os arquivos taxonômicos do NCBI basta obtê-los pelo site FTP:
+https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/
+
+A pasta new_taxdump contém um arquivo chamado rankedlineage, que possui a árvore taxonômica completa para cada espécie em uma única linha
+O arquivo está no formato DMP. Nesse arquivo cada coluna está separada por \t|\t e cada linha separada por \t|\n
+
+--------------------------------------------------------------
+Para permitir acesso a arquivos locais:
+
+No terminal acessar o servidor mysql:
+sudo mysql -u root -p --local-infile
+
+Configurar leitura de arquivo local:
+SHOW GLOBAL VARIABLES LIKE 'local_infile';
+SET GLOBAL local_infile = 'ON';
+SHOW GLOBAL VARIABLES LIKE 'local_infile';
+
+
+Permitir que o cliente acesse o arquivo no workbench:
+Edit the connection, on the Connection tab, go to the 'Advanced' sub-tab, and in the 'Others:' box add the line 'OPT_LOCAL_INFILE=1'.
+
+https://dba.stackexchange.com/questions/48751/enabling-load-data-local-infile-in-mysql
+https://stackoverflow.com/questions/63361962/error-2068-hy000-load-data-local-infile-file-request-rejected-due-to-restrict
+
+--------------------------------------------------------------
+Para carregar dados de um arquivo para uma tabela:
+
+LOAD DATA INFILE
+'/var/lib/mysql-files/rankedlineage.CSV'
+INTO TABLE nome_da_tabela  
+FIELDS TERMINATED BY '\t|\t'  
+LINES TERMINATED BY '\t|\n'
+(col1, col2, col3, col4, col5);
+
+*Obs: Caso ocorra um erro na leitura do arquivo, reveja o passo anterior ou leia o arquivo 'Soluções de Problemas'
+--------------------------------------------------------------
+Acesso remoto ao banco de dados:
+https://www.youtube.com/watch?v=j9YK8AdcqLg
+
+--------------------------------------------------------------
+Para buscar um valor com base em resultados semelhantes, podemos fazer uma busca com base na linguagem natural e relevância. Para isso devemos adicionar um fulltext na coluna a ser consultada, dessa forma: 
+ALTER TABLE nome_da_tabela ADD FULLTEXT(nome_da_coluna);
+
+*Obs: é bom que a tabela tenha uma coluna de ids, primary key
+
+Assim podemos buscar por um termo em uma coluna e encontrar aquele que é mais semelhante. Exemplo:
+SELECT * FROM nome_da_tabela WHERE MATCH(nome_da_coluna) AGAINST('termo desejado' IN NATURAL LANGUAGE MODE)
+
+Tambem é possível buscar em duas colunas, mas no mysql pode ocorrer um erro. É possível o problema seja resolvido criando a tabela com a engine innodb
