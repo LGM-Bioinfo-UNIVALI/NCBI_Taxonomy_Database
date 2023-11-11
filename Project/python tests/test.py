@@ -2,40 +2,32 @@ import pymysql.cursors
 from time import process_time
 from time import perf_counter
 
+import concurrent.futures
 
-# Connect to the database
-connection = pymysql.connect(host='localhost',
-							 user='root',
-							 password='pmore2712',
-							 database='taxonomy',
-							 cursorclass=pymysql.cursors.DictCursor)
+connection = pymysql.connect(
+			host='localhost',
+			user='root',
+			password='Amora#1000',
+			database='ncbi_data',
+			cursorclass=pymysql.cursors.DictCursor
+		)
 
 with connection:
 	with connection.cursor() as cursor:
 		t1_start = perf_counter()
-		organism_taxid = "2763546"
 
-		cursor.execute(f"SELECT A.tax_id, A._rank, B._rank, B.tax_id, B.parent_taxnodes_id FROM nodes A JOIN nodes B ON A.parent_taxnodes_id = B.tax_id WHERE A.tax_id = {organism_taxid}")
-
-		results = []
-		result = cursor.fetchall()[0]
-
-		results.append(result)
-
-		while result['B._rank'] != "no rank":
-			organism_taxid = result['parent_taxnodes_id']
-			cursor.execute(f"SELECT A.tax_id, A._rank, B._rank, B.tax_id, B.parent_taxnodes_id FROM nodes A JOIN nodes B ON A.parent_taxnodes_id = B.tax_id WHERE A.tax_id = {organism_taxid} LIMIT 1")
+		cursor.execute(f"SELECT * FROM names WHERE name_txt = 'Pegasus sinensis' LIMIT 1")
+		result = cursor.fetchone()
+		print(result)
+		if result is None:
+			cursor.execute(f"SELECT * FROM names WHERE MATCH(name_txt) AGAINST('Pegasus sinensis' IN NATURAL LANGUAGE MODE)")
 			result = cursor.fetchone()
-			results.append(result)
 
-		taxids = []
-		for result in results:
-			taxids.append(result['tax_id'])
-			taxids.append(result['B.tax_id'])
-
-		cursor.execute(f"SELECT name_txt FROM names WHERE tax_id IN {tuple(taxids)} AND name_class = 'scientific name'")
-		result = cursor.fetchall()
-
+		taxid = result['tax_id']
+		name_txt = result['name_txt']
+		print(taxid)
+		print(name_txt)
+		
 		t1_stop = perf_counter()
  
 		print("Elapsed time:", t1_stop, t1_start)
