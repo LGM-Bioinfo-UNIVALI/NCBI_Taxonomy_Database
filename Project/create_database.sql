@@ -1,10 +1,30 @@
-# Utilizando o new_taxdump
-# Com o arquivo rankedlineage do new_taxdump do NCBI podemos criar um único banco com a taxonomia completa de cada organismo
-
 CREATE DATABASE ncbi_data;
 use ncbi_data;
 
-create table organisms (
+
+# =======================================================
+# ACCESSION2TAXID
+
+CREATE TABLE accession2taxid (
+    Accession varchar(200),
+    AccessionVersion varchar(200),
+    TaxId varchar(200),
+    GI varchar(200)
+);
+
+
+LOAD DATA INFILE
+'/var/lib/mysql-files/accession2taxid_00.csv'
+INTO TABLE accession2taxid  
+FIELDS TERMINATED BY '\t'
+LINES TERMINATED BY '\n'
+(Accession, AccessionVersion, TaxId, GI);
+
+
+# =======================================================
+# RANKED LINEAGE
+
+CREATE TABLE organisms (
 	tax_id int,
     tax_name varchar(200),
     species varchar(200),
@@ -26,10 +46,11 @@ LINES TERMINATED BY '\t|\n'
 
 CREATE UNIQUE INDEX organism_id ON organisms ( tax_id);
 
-
+# =======================================================
+# NAMES
 # Com essa tabela podemos obter o taxid dos organismos buscando pelo seu nome
-# Dessa forma podemos consultar a tabela organisms com base no taxid obtido
-create table names (
+
+CREATE TABLE names (
 	tax_id int,
     name_txt varchar(500),
     unique_name varchar(200),

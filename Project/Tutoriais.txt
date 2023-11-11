@@ -8,6 +8,8 @@ https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/
 A pasta new_taxdump contém um arquivo chamado rankedlineage, que possui a árvore taxonômica completa para cada espécie em uma única linha
 O arquivo está no formato DMP. Nesse arquivo cada coluna está separada por \t|\t e cada linha separada por \t|\n
 
+Também tem um arquivo chamado names, que possui os nomes dos organismos, e um arquivo accession2taxid que permite buscar por um taxid a partir do valor de accession
+
 --------------------------------------------------------------
 Para permitir acesso a arquivos locais:
 
